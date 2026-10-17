@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using static SkyHopper.EditorTools.SceneBuilderUtility;
 
 namespace SkyHopper.EditorTools
 {
@@ -20,168 +19,77 @@ namespace SkyHopper.EditorTools
     /// </summary>
     public static class Stage1Builder
     {
-        const string ScenePath = SceneFolder + "/Stage1.unity";
-        const string PickupSoundPath = "Assets/SourceFiles/SoundFX/SFX_PositiveSound01.ogg";
-
-        static Material cloud, coinMaterial, goldTrim;
-        static AudioClip pickupSound;
-        static Transform islands, coins;
-
         [MenuItem("Sky Hopper/스테이지 1 만들기", priority = 0)]
-        static void Build()
+        static void BuildFromMenu() => Build(askUser: true);
+
+        internal static void Build(bool askUser)
         {
-            if (!TryCreateNewScene(ScenePath, "스테이지 1 만들기", out var scene))
+            var kit = StageBuildKit.Begin("Stage1", 0, askUser);
+            if (kit == null)
                 return;
 
-            LoadResources();
-            CreateLighting();
-
-            islands = new GameObject("Islands").transform;
-            coins = new GameObject("Coins").transform;
-            var checkpoints = new GameObject("Checkpoints").transform;
-
             // ① 시작 섬: 걸으면서 코인 줍기
-            Island("01_Start", new Vector3(0f, 0f, 0f), new Vector2(16f, 16f));
-            CoinLine(new Vector3(0f, 1f, -1f), new Vector3(0f, 1f, 5f), 4);
+            kit.Island("01_Start", new Vector3(0f, 0f, 0f), new Vector2(16f, 16f));
+            kit.CoinLine(new Vector3(0f, 1f, -1f), new Vector3(0f, 1f, 5f), 4);
 
             // ② 3m 틈을 건너며 1m씩 올라가는 작은 섬
-            Island("02_Hop_A", new Vector3(0f, 0f, 14f), new Vector2(6f, 6f));
-            Island("02_Hop_B", new Vector3(0f, 1f, 23f), new Vector2(6f, 6f));
-            Island("02_Hop_C", new Vector3(0f, 2f, 32f), new Vector2(6f, 6f));
-            Coin(new Vector3(0f, 2f, 9.5f));
-            Coin(new Vector3(0f, 1f, 14f));
-            Coin(new Vector3(0f, 3f, 18.5f));
-            Coin(new Vector3(0f, 2f, 23f));
-            Coin(new Vector3(0f, 4f, 27.5f));
-            Coin(new Vector3(0f, 3f, 32f));
+            kit.Island("02_Hop_A", new Vector3(0f, 0f, 14f), new Vector2(6f, 6f));
+            kit.Island("02_Hop_B", new Vector3(0f, 1f, 23f), new Vector2(6f, 6f));
+            kit.Island("02_Hop_C", new Vector3(0f, 2f, 32f), new Vector2(6f, 6f));
+            kit.Coin(new Vector3(0f, 2f, 9.5f));
+            kit.Coin(new Vector3(0f, 1f, 14f));
+            kit.Coin(new Vector3(0f, 3f, 18.5f));
+            kit.Coin(new Vector3(0f, 2f, 23f));
+            kit.Coin(new Vector3(0f, 4f, 27.5f));
+            kit.Coin(new Vector3(0f, 3f, 32f));
 
             // ③ 체크포인트 1 (다음 길은 오른쪽 +X 방향)
-            Island("03_Checkpoint1", new Vector3(0f, 2f, 44f), new Vector2(12f, 12f));
-            CreateCheckpoint(checkpoints, new Vector3(0f, 2f, 41f), Quaternion.Euler(0f, 90f, 0f));
-            Coin(new Vector3(-3f, 3f, 46f));
-            Coin(new Vector3(3f, 3f, 46f));
+            kit.Island("03_Checkpoint1", new Vector3(0f, 2f, 44f), new Vector2(12f, 12f));
+            kit.Checkpoint(new Vector3(0f, 2f, 41f), 90f);
+            kit.Coin(new Vector3(-3f, 3f, 46f));
+            kit.Coin(new Vector3(3f, 3f, 46f));
 
             // ④ 1.5m씩 올라가는 계단 섬
-            Island("04_Step_A", new Vector3(10f, 3.5f, 44f), new Vector2(4f, 4f));
-            Island("04_Step_B", new Vector3(15f, 5f, 44f), new Vector2(4f, 4f));
-            Island("04_Step_C", new Vector3(20f, 6.5f, 44f), new Vector2(4f, 4f));
-            Coin(new Vector3(10f, 4.5f, 44f));
-            Coin(new Vector3(15f, 6f, 44f));
-            Coin(new Vector3(20f, 7.5f, 44f));
+            kit.Island("04_Step_A", new Vector3(10f, 3.5f, 44f), new Vector2(4f, 4f));
+            kit.Island("04_Step_B", new Vector3(15f, 5f, 44f), new Vector2(4f, 4f));
+            kit.Island("04_Step_C", new Vector3(20f, 6.5f, 44f), new Vector2(4f, 4f));
+            kit.Coin(new Vector3(10f, 4.5f, 44f));
+            kit.Coin(new Vector3(15f, 6f, 44f));
+            kit.Coin(new Vector3(20f, 7.5f, 44f));
 
             // ⑤ 7m 틈: 더블점프 연습 (틈 위 코인은 더블점프 궤적을 따라 배치)
-            Island("05_DoubleJump", new Vector3(33f, 6.5f, 44f), new Vector2(8f, 8f));
-            Coin(new Vector3(24.5f, 8.5f, 44f));
-            Coin(new Vector3(26.5f, 9f, 44f));
-            Coin(new Vector3(33f, 7.5f, 44f));
+            kit.Island("05_DoubleJump", new Vector3(33f, 6.5f, 44f), new Vector2(8f, 8f));
+            kit.Coin(new Vector3(24.5f, 8.5f, 44f));
+            kit.Coin(new Vector3(26.5f, 9f, 44f));
+            kit.Coin(new Vector3(33f, 7.5f, 44f));
 
             // ⑥ 3.2m 높은 벽 위의 체크포인트 2 (다음 길은 앞쪽 +Z 방향)
-            Island("06_HighWall_Checkpoint2", new Vector3(43f, 9.7f, 44f), new Vector2(12f, 12f));
-            CreateCheckpoint(checkpoints, new Vector3(40.5f, 9.7f, 44f), Quaternion.identity);
-            Coin(new Vector3(43f, 10.7f, 47f));
-            Coin(new Vector3(46f, 10.7f, 47f));
+            kit.Island("06_HighWall_Checkpoint2", new Vector3(43f, 9.7f, 44f), new Vector2(12f, 12f));
+            kit.Checkpoint(new Vector3(40.5f, 9.7f, 44f), 0f);
+            kit.Coin(new Vector3(43f, 10.7f, 47f));
+            kit.Coin(new Vector3(46f, 10.7f, 47f));
 
             // ⑦ 점점 넓어지는 틈: 4m → 5m → 6m
-            Island("07_Gap4", new Vector3(43f, 9.7f, 56f), new Vector2(4f, 4f));
-            Island("07_Gap5", new Vector3(43f, 10.5f, 65f), new Vector2(4f, 4f));
-            Island("07_Gap6", new Vector3(43f, 10.5f, 75f), new Vector2(4f, 4f));
-            Coin(new Vector3(43f, 11.7f, 52f));
-            Coin(new Vector3(43f, 10.7f, 56f));
-            Coin(new Vector3(43f, 12.5f, 61f));
-            Coin(new Vector3(43f, 11.5f, 65f));
-            Coin(new Vector3(43f, 12.8f, 70.5f));
-            Coin(new Vector3(43f, 11.5f, 75f));
+            kit.Island("07_Gap4", new Vector3(43f, 9.7f, 56f), new Vector2(4f, 4f));
+            kit.Island("07_Gap5", new Vector3(43f, 10.5f, 65f), new Vector2(4f, 4f));
+            kit.Island("07_Gap6", new Vector3(43f, 10.5f, 75f), new Vector2(4f, 4f));
+            kit.Coin(new Vector3(43f, 11.7f, 52f));
+            kit.Coin(new Vector3(43f, 10.7f, 56f));
+            kit.Coin(new Vector3(43f, 12.5f, 61f));
+            kit.Coin(new Vector3(43f, 11.5f, 65f));
+            kit.Coin(new Vector3(43f, 12.8f, 70.5f));
+            kit.Coin(new Vector3(43f, 11.5f, 75f));
 
             // ⑧ 골
-            Island("08_Goal", new Vector3(43f, 10.5f, 85f), new Vector2(10f, 10f));
-            CreateGoal(new Vector3(43f, 10.5f, 87f));
+            kit.Island("08_Goal", new Vector3(43f, 10.5f, 85f), new Vector2(10f, 10f));
+            kit.Goal(new Vector3(43f, 10.5f, 87f), 0f);
 
-            CreateClouds();
-
-            var player = CreatePlayer(new Vector3(0f, 0.1f, -4f), Quaternion.identity);
-            CreateCamera(player);
-            StageUIBuilder.CreateStageSystems(player);
-
-            SaveScene(scene, ScenePath);
-            Selection.activeGameObject = player.gameObject;
-            Debug.Log($"[Sky Hopper] 스테이지 1을 만들었습니다 (코인 {coins.childCount}개): {ScenePath}");
-        }
-
-        static void LoadResources()
-        {
-            coinMaterial = LoadMaterial("Material_GoldGlow");
-            goldTrim = LoadMaterial("Material_Simple_Yellow");
-            cloud = GetOrCreateColorMaterial("SH_Cloud", new Color(0.97f, 0.98f, 1f));
-            pickupSound = LoadAsset<AudioClip>(PickupSoundPath);
-        }
-
-        static void Island(string name, Vector3 topCenter, Vector2 size)
-        {
-            CreateIsland(islands, name, topCenter, size);
-        }
-
-        static void Coin(Vector3 position)
-        {
-            var coin = new GameObject("Coin");
-            coin.transform.SetParent(coins, false);
-            coin.transform.localPosition = position;
-
-            var trigger = coin.AddComponent<SphereCollider>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.6f;
-
-            var coinScript = coin.AddComponent<SkyHopper.Coin>();
-            SetReference(coinScript, "pickupSound", pickupSound);
-
-            var visual = CreateVisual(PrimitiveType.Cylinder, "Visual", coin.transform,
-                Vector3.zero, new Vector3(0.7f, 0.06f, 0.7f), coinMaterial);
-            visual.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-        }
-
-        static void CoinLine(Vector3 from, Vector3 to, int count)
-        {
-            for (int i = 0; i < count; i++)
-                Coin(Vector3.Lerp(from, to, count == 1 ? 0f : i / (float)(count - 1)));
-        }
-
-        static void CreateGoal(Vector3 position)
-        {
-            var goal = new GameObject("Goal");
-            goal.transform.position = position;
-
-            CreateBlock(goal.transform, "Pillar_Left", new Vector3(-2f, 2f, 0f), new Vector3(0.6f, 4f, 0.6f), goldTrim);
-            CreateBlock(goal.transform, "Pillar_Right", new Vector3(2f, 2f, 0f), new Vector3(0.6f, 4f, 0.6f), goldTrim);
-            CreateBlock(goal.transform, "Beam", new Vector3(0f, 4.3f, 0f), new Vector3(4.6f, 0.6f, 0.6f), goldTrim);
-            CreateVisual(PrimitiveType.Cube, "Glow", goal.transform,
-                new Vector3(0f, 2f, 0f), new Vector3(3.4f, 4f, 0.05f), coinMaterial);
-
-            var trigger = goal.AddComponent<BoxCollider>();
-            trigger.isTrigger = true;
-            trigger.center = new Vector3(0f, 2f, 0f);
-            trigger.size = new Vector3(3.4f, 4f, 1.5f);
-
-            var goalScript = goal.AddComponent<Goal>();
-            SetReference(goalScript, "clearSound", pickupSound);
-        }
-
-        static void CreateClouds()
-        {
-            var clouds = new GameObject("Clouds").transform;
-            var positions = new[]
-            {
+            kit.Clouds(
                 new Vector3(-18f, -6f, 10f), new Vector3(15f, -8f, 25f), new Vector3(-12f, -3f, 45f),
                 new Vector3(25f, -2f, 60f), new Vector3(60f, 2f, 50f), new Vector3(30f, 4f, 95f),
-                new Vector3(60f, 6f, 85f), new Vector3(-5f, -10f, 75f),
-            };
-            for (int i = 0; i < positions.Length; i++)
-            {
-                var puff = CreateVisual(PrimitiveType.Sphere, "Cloud_" + (i + 1), clouds,
-                    positions[i], new Vector3(14f, 3f, 9f), cloud);
-                CreateVisual(PrimitiveType.Sphere, "Puff", puff.transform,
-                    new Vector3(0.25f, 0.6f, 0.1f), new Vector3(0.5f, 1.2f, 0.6f), cloud);
-                puff.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            }
-        }
+                new Vector3(60f, 6f, 85f), new Vector3(-5f, -10f, 75f));
 
+            kit.Finish(new Vector3(0f, 0.1f, -4f), 0f);
+        }
     }
 }

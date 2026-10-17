@@ -19,8 +19,13 @@ namespace SkyHopper
 
         public static int GetTotalCoins(string sceneName) => PlayerPrefs.GetInt(Key(sceneName, "TotalCoins"), 0);
 
+        /// <summary>한 번에 가장 많이 모은 별 수</summary>
+        public static int GetBestStars(string sceneName) => PlayerPrefs.GetInt(Key(sceneName, "BestStars"), 0);
+
+        public static int GetTotalStars(string sceneName) => PlayerPrefs.GetInt(Key(sceneName, "TotalStars"), 0);
+
         /// <summary>클리어 결과를 저장하고, 최고 기록을 새로 세웠으면 true</summary>
-        public static bool RecordClear(string sceneName, float time, int coins, int totalCoins)
+        public static bool RecordClear(string sceneName, float time, int coins, int totalCoins, int stars, int totalStars)
         {
             float bestTime = GetBestTime(sceneName);
             bool isNewBest = bestTime <= 0f || time < bestTime;
@@ -30,7 +35,10 @@ namespace SkyHopper
                 PlayerPrefs.SetFloat(Key(sceneName, "BestTime"), time);
             if (coins > GetBestCoins(sceneName))
                 PlayerPrefs.SetInt(Key(sceneName, "BestCoins"), coins);
+            if (stars > GetBestStars(sceneName))
+                PlayerPrefs.SetInt(Key(sceneName, "BestStars"), stars);
             PlayerPrefs.SetInt(Key(sceneName, "TotalCoins"), totalCoins);
+            PlayerPrefs.SetInt(Key(sceneName, "TotalStars"), totalStars);
             PlayerPrefs.Save();
             return isNewBest;
         }

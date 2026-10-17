@@ -15,11 +15,11 @@ MonoBehaviour:
   stages:
   - sceneName: Stage1
     displayName: "\uCCAB \uBC88\uC9F8 \uC12C"
-  - sceneName: 
+  - sceneName: Stage2
     displayName: "\uBC14\uB78C\uC758 \uB2E4\uB9AC"
-  - sceneName: 
+  - sceneName: Stage3
     displayName: "\uB5A0\uB3C4\uB294 \uBC1C\uD310"
-  - sceneName: 
+  - sceneName: Stage4
     displayName: "\uC218\uBE44\uB300\uC758 \uC12C"
-  - sceneName: 
+  - sceneName: Stage5
     displayName: "\uD558\uB298 \uAF2D\uB300\uAE30"

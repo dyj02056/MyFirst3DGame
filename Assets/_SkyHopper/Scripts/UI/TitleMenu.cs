@@ -99,8 +99,13 @@ namespace SkyHopper
                 else if (!unlocked)
                     detail = "잠김 - 이전 스테이지를 클리어하세요";
                 else if (SaveData.IsCleared(entry.sceneName))
-                    detail = $"최고 기록 {SaveData.FormatTime(SaveData.GetBestTime(entry.sceneName))}    " +
-                             $"코인 {SaveData.GetBestCoins(entry.sceneName)} / {SaveData.GetTotalCoins(entry.sceneName)}";
+                {
+                    string scene = entry.sceneName;
+                    detail = $"최고 기록 {SaveData.FormatTime(SaveData.GetBestTime(scene))}    " +
+                             $"코인 {SaveData.GetBestCoins(scene)} / {SaveData.GetTotalCoins(scene)}";
+                    if (SaveData.GetTotalStars(scene) > 0)
+                        detail += $"    별 {SaveData.GetBestStars(scene)} / {SaveData.GetTotalStars(scene)}";
+                }
                 else
                     detail = "도전해 보세요!";
 

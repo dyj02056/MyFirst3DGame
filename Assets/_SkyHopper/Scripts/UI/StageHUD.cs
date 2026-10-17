@@ -9,6 +9,9 @@ namespace SkyHopper
     {
         [SerializeField] TMP_Text timeText;
         [SerializeField] TMP_Text coinText;
+        [Tooltip("별이 있는 스테이지에서만 보이는 상자 (비워 둬도 됨)")]
+        [SerializeField] GameObject starBox;
+        [SerializeField] TMP_Text starText;
 
         [Header("클리어 화면")]
         [SerializeField] GameObject clearPanel;
@@ -39,6 +42,12 @@ namespace SkyHopper
             timeText.text = "시간  " + SaveData.FormatTime(stage.ElapsedTime);
             coinText.text = $"코인  {stage.CoinCount} / {stage.TotalCoins}";
 
+            bool hasStars = stage.TotalStars > 0;
+            if (starBox != null && starBox.activeSelf != hasStars)
+                starBox.SetActive(hasStars);
+            if (starText != null && hasStars)
+                starText.text = $"별  {stage.StarCount} / {stage.TotalStars}";
+
             if (stage.IsCleared && !clearPanel.activeSelf)
                 ShowClear(stage);
         }
@@ -51,10 +60,12 @@ namespace SkyHopper
             string best = stage.IsNewBest
                 ? "<color=#FFD54A>최고 기록 달성!</color>"
                 : "최고 기록  " + SaveData.FormatTime(stage.BestTime);
+            string collected = $"코인  {stage.CoinCount} / {stage.TotalCoins}";
+            if (stage.TotalStars > 0)
+                collected += $"      별  {stage.StarCount} / {stage.TotalStars}";
             clearText.text =
                 "스테이지 클리어!\n" +
-                $"<size=60%>클리어 시간  {SaveData.FormatTime(stage.ElapsedTime)}\n{best}\n" +
-                $"코인  {stage.CoinCount} / {stage.TotalCoins}</size>";
+                $"<size=60%>클리어 시간  {SaveData.FormatTime(stage.ElapsedTime)}\n{best}\n{collected}</size>";
         }
     }
 }

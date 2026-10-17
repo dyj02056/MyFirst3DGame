@@ -14,18 +14,24 @@ namespace SkyHopper.EditorTools
         internal const string SceneFolder = "Assets/_SkyHopper/Scenes";
         const string MaterialFolder = "Assets/_SkyHopper/Materials";
 
-        /// <summary>새 빈 씬을 엽니다. 사용자가 취소하면 false.</summary>
-        internal static bool TryCreateNewScene(string scenePath, string title, out Scene scene)
+        /// <summary>
+        /// 새 빈 씬을 엽니다. 사용자가 취소하면 false.
+        /// askUser가 false면 확인 창 없이 바로 만듦 ("모든 스테이지 다시 만들기"에서 처음에 한 번만 물어볼 때)
+        /// </summary>
+        internal static bool TryCreateNewScene(string scenePath, string title, out Scene scene, bool askUser = true)
         {
             scene = default;
-            if (File.Exists(scenePath) &&
-                !EditorUtility.DisplayDialog(title,
-                    Path.GetFileNameWithoutExtension(scenePath) + " 씬이 이미 있습니다. 지우고 새로 만들까요?",
-                    "새로 만들기", "취소"))
-                return false;
+            if (askUser)
+            {
+                if (File.Exists(scenePath) &&
+                    !EditorUtility.DisplayDialog(title,
+                        Path.GetFileNameWithoutExtension(scenePath) + " 씬이 이미 있습니다. 지우고 새로 만들까요?",
+                        "새로 만들기", "취소"))
+                    return false;
 
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                return false;
+                if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    return false;
+            }
 
             scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             return true;
@@ -250,6 +256,29 @@ namespace SkyHopper.EditorTools
             var serialized = new SerializedObject(component);
             serialized.FindProperty(fieldName).vector3Value = value;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        internal static void SetFloat(Object component, string fieldName, float value)
+        {
+            var serialized = new SerializedObject(component);
+            serialized.FindProperty(fieldName).floatValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>스테이지 목록의 index번째 칸에 씬 이름을 적어 "준비 중"을 해제</summary>
+        internal static void RegisterStageInCatalog(int index, string sceneName)
+        {
+            var catalog = GetOrCreateStageCatalog();
+            var serialized = new SerializedObject(catalog);
+            var stages = serialized.FindProperty("stages");
+            if (index >= stages.arraySize)
+                stages.arraySize = index + 1;
+            var entry = stages.GetArrayElementAtIndex(index).FindPropertyRelative("sceneName");
+            if (entry.stringValue == sceneName)
+                return;
+            entry.stringValue = sceneName;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            AssetDatabase.SaveAssets();
         }
 
         internal static T LoadAsset<T>(string path) where T : Object

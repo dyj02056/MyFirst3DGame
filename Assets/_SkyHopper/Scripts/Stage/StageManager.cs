@@ -18,6 +18,8 @@ namespace SkyHopper
         public float ElapsedTime { get; private set; }
         public int CoinCount { get; private set; }
         public int TotalCoins { get; private set; }
+        public int StarCount { get; private set; }
+        public int TotalStars { get; private set; }
         public bool IsCleared { get; private set; }
         /// <summary>저장된 최고 기록 (초). 기록이 없으면 0</summary>
         public float BestTime { get; private set; }
@@ -55,6 +57,7 @@ namespace SkyHopper
         void Start()
         {
             TotalCoins = Coin.ActiveCount;
+            TotalStars = Star.ActiveCount;
             BestTime = SaveData.GetBestTime(SceneName);
         }
 
@@ -73,13 +76,18 @@ namespace SkyHopper
             CoinCount++;
         }
 
+        public void AddStar()
+        {
+            StarCount++;
+        }
+
         public void CompleteStage()
         {
             if (IsCleared)
                 return;
             IsCleared = true;
 
-            IsNewBest = SaveData.RecordClear(SceneName, ElapsedTime, CoinCount, TotalCoins);
+            IsNewBest = SaveData.RecordClear(SceneName, ElapsedTime, CoinCount, TotalCoins, StarCount, TotalStars);
             BestTime = SaveData.GetBestTime(SceneName);
 
             // 클리어 후에는 조작을 멈추고 버튼을 누를 수 있게 커서를 보여 줌

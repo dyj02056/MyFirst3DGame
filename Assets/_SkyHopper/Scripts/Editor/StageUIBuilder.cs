@@ -35,6 +35,13 @@ namespace SkyHopper.EditorTools
             var coinText = CreateText(box.transform, "CoinText", "코인  0 / 0", 46f, TextAlignmentOptions.Left,
                 new Vector2(0f, 1f), new Vector2(28f, -76f), new Vector2(380f, 64f));
 
+            // 별 상자: 별이 있는 스테이지에서만 보임
+            var starBox = CreatePanel(root, "StarBox", new Color(0f, 0f, 0f, 0.35f),
+                new Vector2(0f, 1f), new Vector2(30f, -192f), new Vector2(420f, 80f));
+            var starText = CreateText(starBox.transform, "StarText", "별  0 / 3", 46f, TextAlignmentOptions.Left,
+                new Vector2(0f, 1f), new Vector2(28f, -8f), new Vector2(380f, 64f));
+            starText.color = new Color(1f, 0.86f, 0.3f);
+
             // 왼쪽 아래: 조작법
             var hint = CreateText(root, "HintText",
                 "WASD 이동    Space 점프 (공중에서 한 번 더)    Shift 대시    R 다시 시작    Esc 일시정지",
@@ -54,6 +61,8 @@ namespace SkyHopper.EditorTools
             var hud = root.gameObject.AddComponent<StageHUD>();
             SetReference(hud, "timeText", timeText);
             SetReference(hud, "coinText", coinText);
+            SetReference(hud, "starBox", starBox.gameObject);
+            SetReference(hud, "starText", starText);
             SetReference(hud, "clearPanel", clearPanel.gameObject);
             SetReference(hud, "clearText", clearText);
             SetReference(hud, "nextButton", nextButton);
