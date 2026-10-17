@@ -1,0 +1,45 @@
+# Unity가 자동으로 다시 만드는 폴더 (백업할 필요 없음)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# 코드 편집기가 자동으로 만드는 파일
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# 빌드 결과물과 임시 파일
+*.apk
+*.aab
+*.app
+*.unitypackage
+*.unitypackage.meta
+*.tmp
+sysinfo.txt
+mono_crash.*
+crashlytics-build.properties
+
+# Addressables 빌드 캐시
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
