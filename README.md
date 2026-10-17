@@ -5,6 +5,8 @@
 
 ▶ **브라우저에서 바로 플레이: https://sky-hopper-eight.vercel.app**
 
+![Sky Hopper 플레이 화면: 타이틀 → 스테이지 선택 → 스테이지 1에서 점프·대시·더블점프로 높은 벽까지](Docs/gameplay.gif)
+
 ## 개발 환경
 - Unity **6.6 (6000.6.6f1)**, URP
 - 새 Input System
@@ -41,6 +43,17 @@
   ```
   npx vercel deploy --prod --yes
   ```
+
+## 플레이 GIF 다시 만들기
+위 GIF는 게임이 스스로 플레이하는 자동 시연을 녹화해서 만들었습니다 (`Assets/_SkyHopper/Scripts/Core/DemoRecorder.cs`).
+1. Windows 빌드를 만든 뒤, 녹화 옵션을 붙여 실행합니다 (소리는 꺼지고, 끝나면 저절로 닫힘).
+   ```
+   Builds\Windows\SkyHopper.exe -screen-fullscreen 0 -screen-width 640 -screen-height 360 -sh-demo C:\frames
+   ```
+2. 녹화된 프레임을 GIF로 합칩니다 (Python + Pillow 필요).
+   ```
+   python Tools/make_gif.py C:\frames Docs/gameplay.gif --step 2 --width 480 --colors 128
+   ```
 
 ## 조작
 | 키 | 동작 |

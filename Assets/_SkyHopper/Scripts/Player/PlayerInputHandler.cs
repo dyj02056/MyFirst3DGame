@@ -15,15 +15,24 @@ namespace SkyHopper
         InputAction jumpAction;
         InputAction dashAction;
 
+        /// <summary>
+        /// 자동 시연(DemoRecorder) 중에는 키보드 대신 아래 Demo 값으로 조작합니다.
+        /// DemoJump·DemoDash는 한 프레임만 true로 두면 "한 번 누름"이 됩니다.
+        /// </summary>
+        public static bool DemoMode { get; set; }
+        public static Vector2 DemoMove { get; set; }
+        public static bool DemoJump { get; set; }
+        public static bool DemoDash { get; set; }
+
         /// <summary>이동 입력 (x = 좌우, y = 앞뒤), 길이는 최대 1</summary>
-        public Vector2 Move => Vector2.ClampMagnitude(moveAction.ReadValue<Vector2>(), 1f);
+        public Vector2 Move => DemoMode ? Vector2.ClampMagnitude(DemoMove, 1f) : Vector2.ClampMagnitude(moveAction.ReadValue<Vector2>(), 1f);
         /// <summary>이번 프레임 마우스 이동량 (픽셀)</summary>
-        public Vector2 MouseLook => mouseLookAction.ReadValue<Vector2>();
+        public Vector2 MouseLook => DemoMode ? Vector2.zero : mouseLookAction.ReadValue<Vector2>();
         /// <summary>게임패드 오른쪽 스틱 (-1 ~ 1)</summary>
-        public Vector2 StickLook => stickLookAction.ReadValue<Vector2>();
-        public bool JumpPressed => jumpAction.WasPressedThisFrame();
-        public bool JumpHeld => jumpAction.IsPressed();
-        public bool DashPressed => dashAction.WasPressedThisFrame();
+        public Vector2 StickLook => DemoMode ? Vector2.zero : stickLookAction.ReadValue<Vector2>();
+        public bool JumpPressed => DemoMode ? DemoJump : jumpAction.WasPressedThisFrame();
+        public bool JumpHeld => DemoMode ? DemoJump : jumpAction.IsPressed();
+        public bool DashPressed => DemoMode ? DemoDash : dashAction.WasPressedThisFrame();
 
         void Awake()
         {

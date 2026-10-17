@@ -9,6 +9,10 @@ namespace SkyHopper
 
         public static void SetLocked(bool locked)
         {
+            // 자동 시연 녹화 중에는 사용자의 마우스를 붙잡지 않음
+            if (PlayerInputHandler.DemoMode)
+                locked = false;
+
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !locked;
         }

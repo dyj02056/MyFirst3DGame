@@ -37,17 +37,22 @@ namespace SkyHopper.EditorTools
         /// 창 없이 명령줄로 웹 빌드 (Unity 편집기를 열지 않고 자동으로 빌드할 때 사용)
         /// Unity.exe -batchmode -quit -projectPath (프로젝트) -executeMethod SkyHopper.EditorTools.GameBuilder.BuildWebFromCommandLine
         /// </summary>
-        public static void BuildWebFromCommandLine()
+        public static void BuildWebFromCommandLine() => BuildFromCommandLine(BuildTarget.WebGL, WebPath);
+
+        /// <summary>창 없이 명령줄로 Windows 빌드 (사용법은 웹과 같고 메서드 이름만 다름)</summary>
+        public static void BuildWindowsFromCommandLine() => BuildFromCommandLine(BuildTarget.StandaloneWindows64, WindowsPath);
+
+        static void BuildFromCommandLine(BuildTarget target, string path)
         {
             ApplyPlayerSettings();
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
                 scenes = ScenePaths,
-                locationPathName = WebPath,
-                target = BuildTarget.WebGL,
-                targetGroup = BuildTargetGroup.WebGL,
+                locationPathName = path,
+                target = target,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(target),
             });
-            Debug.Log($"[Sky Hopper] 명령줄 웹 빌드 결과: {report.summary.result}, 오류 {report.summary.totalErrors}개");
+            Debug.Log($"[Sky Hopper] 명령줄 {TargetName(target)} 빌드 결과: {report.summary.result}, 오류 {report.summary.totalErrors}개");
             EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
 
