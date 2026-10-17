@@ -1,23 +1,33 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SkyHopper
 {
-    /// <summary>
-    /// 게임 화면 위 글자: 시간, 코인 수, 클리어 화면.
-    /// (기본 글꼴에 한글이 없어서 지금은 영어로 표시합니다. 한글 글꼴은 5주차 UI 작업 때 추가)
-    /// </summary>
+    /// <summary>게임 화면 위 글자(시간, 코인 수)와 클리어 화면.</summary>
     public class StageHUD : MonoBehaviour
     {
         [SerializeField] TMP_Text timeText;
         [SerializeField] TMP_Text coinText;
+
+        [Header("클리어 화면")]
         [SerializeField] GameObject clearPanel;
         [SerializeField] TMP_Text clearText;
+        [SerializeField] Button nextButton;
+        [SerializeField] Button retryButton;
+        [SerializeField] Button stageSelectButton;
 
-        void Start()
+        void Awake()
         {
-            if (clearPanel != null)
-                clearPanel.SetActive(false);
+            clearPanel.SetActive(false);
+            nextButton.onClick.AddListener(() =>
+            {
+                string next = StageManager.Instance != null ? StageManager.Instance.NextStageScene : null;
+                if (next != null)
+                    SceneLoader.LoadStage(next);
+            });
+            retryButton.onClick.AddListener(SceneLoader.Restart);
+            stageSelectButton.onClick.AddListener(() => SceneLoader.LoadTitle(openStageSelect: true));
         }
 
         void Update()
@@ -26,25 +36,25 @@ namespace SkyHopper
             if (stage == null)
                 return;
 
-            timeText.text = "TIME  " + FormatTime(stage.ElapsedTime);
-            coinText.text = $"COIN  {stage.CoinCount} / {stage.TotalCoins}";
+            timeText.text = "시간  " + SaveData.FormatTime(stage.ElapsedTime);
+            coinText.text = $"코인  {stage.CoinCount} / {stage.TotalCoins}";
 
-            if (stage.IsCleared && clearPanel != null && !clearPanel.activeSelf)
-            {
-                clearPanel.SetActive(true);
-                string best = stage.IsNewBest ? "NEW BEST!" : "BEST  " + FormatTime(stage.BestTime);
-                clearText.text =
-                    "STAGE CLEAR!\n\n" +
-                    $"<size=70%>TIME  {FormatTime(stage.ElapsedTime)}\n{best}\n" +
-                    $"COIN  {stage.CoinCount} / {stage.TotalCoins}\n\n" +
-                    "<size=50%>Press R to play again</size>";
-            }
+            if (stage.IsCleared && !clearPanel.activeSelf)
+                ShowClear(stage);
         }
 
-        static string FormatTime(float seconds)
+        void ShowClear(StageManager stage)
         {
-            int minutes = (int)(seconds / 60f);
-            return $"{minutes:00}:{seconds - minutes * 60f:00.00}";
+            clearPanel.SetActive(true);
+            nextButton.interactable = stage.NextStageScene != null;
+
+            string best = stage.IsNewBest
+                ? "<color=#FFD54A>최고 기록 달성!</color>"
+                : "최고 기록  " + SaveData.FormatTime(stage.BestTime);
+            clearText.text =
+                "스테이지 클리어!\n" +
+                $"<size=60%>클리어 시간  {SaveData.FormatTime(stage.ElapsedTime)}\n{best}\n" +
+                $"코인  {stage.CoinCount} / {stage.TotalCoins}</size>";
         }
     }
 }

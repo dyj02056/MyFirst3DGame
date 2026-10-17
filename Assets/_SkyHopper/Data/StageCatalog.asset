@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190e2296e01e72140b9dbc1959f8f176, type: 3}
+  m_Name: StageCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::SkyHopper.StageCatalog
+  stages:
+  - sceneName: Stage1
+    displayName: "\uCCAB \uBC88\uC9F8 \uC12C"
+  - sceneName: 
+    displayName: "\uBC14\uB78C\uC758 \uB2E4\uB9AC"
+  - sceneName: 
+    displayName: "\uB5A0\uB3C4\uB294 \uBC1C\uD310"
+  - sceneName: 
+    displayName: "\uC218\uBE44\uB300\uC758 \uC12C"
+  - sceneName: 
+    displayName: "\uD558\uB298 \uAF2D\uB300\uAE30"

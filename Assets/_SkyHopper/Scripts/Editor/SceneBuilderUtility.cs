@@ -268,5 +268,59 @@ namespace SkyHopper.EditorTools
             scenes.Add(new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = scenes.ToArray();
         }
+
+        /// <summary>게임을 실행하면 가장 먼저 열리는 씬(목록 맨 위)으로 지정</summary>
+        internal static void MoveSceneToFront(string path)
+        {
+            var scenes = EditorBuildSettings.scenes.Where(s => s.path != path).ToList();
+            scenes.Insert(0, new EditorBuildSettingsScene(path, true));
+            EditorBuildSettings.scenes = scenes.ToArray();
+        }
+
+        internal const string StageCatalogPath = "Assets/_SkyHopper/Data/StageCatalog.asset";
+
+        /// <summary>스테이지 목록 파일을 불러오거나, 없으면 기획서의 스테이지 5개로 새로 만듦</summary>
+        internal static StageCatalog GetOrCreateStageCatalog()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<StageCatalog>(StageCatalogPath);
+            if (catalog != null)
+                return catalog;
+
+            catalog = ScriptableObject.CreateInstance<StageCatalog>();
+            Directory.CreateDirectory(Path.GetDirectoryName(StageCatalogPath));
+            AssetDatabase.CreateAsset(catalog, StageCatalogPath);
+
+            // GAME_DESIGN.md "7. 스테이지 구성" 표. 아직 없는 스테이지는 씬 이름을 비워 둠 ("준비 중")
+            var entries = new (string scene, string name)[]
+            {
+                ("Stage1", "첫 번째 섬"),
+                ("", "바람의 다리"),
+                ("", "떠도는 발판"),
+                ("", "수비대의 섬"),
+                ("", "하늘 꼭대기"),
+            };
+            var serialized = new SerializedObject(catalog);
+            var stages = serialized.FindProperty("stages");
+            stages.arraySize = entries.Length;
+            for (int i = 0; i < entries.Length; i++)
+            {
+                var element = stages.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("sceneName").stringValue = entries[i].scene;
+                element.FindPropertyRelative("displayName").stringValue = entries[i].name;
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            AssetDatabase.SaveAssets();
+            return catalog;
+        }
+
+        internal static void SetReferenceArray(Object component, string fieldName, Object[] values)
+        {
+            var serialized = new SerializedObject(component);
+            var array = serialized.FindProperty(fieldName);
+            array.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+                array.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
     }
 }

@@ -5,13 +5,15 @@ using UnityEngine.SceneManagement;
 namespace SkyHopper
 {
     /// <summary>
-    /// 스테이지 진행 관리: 타이머, 코인 수, 클리어 처리, 최고 기록 저장, R 키로 다시 시작.
+    /// 스테이지 진행 관리: 타이머, 코인 수, 클리어 처리, 기록 저장, R 키로 다시 시작.
     /// </summary>
     public class StageManager : MonoBehaviour
     {
         public static StageManager Instance { get; private set; }
 
         [SerializeField] PlayerController player;
+        [Tooltip("\"다음 스테이지\" 버튼이 어느 씬으로 갈지 찾는 데 사용")]
+        [SerializeField] StageCatalog catalog;
 
         public float ElapsedTime { get; private set; }
         public int CoinCount { get; private set; }
@@ -21,7 +23,21 @@ namespace SkyHopper
         public float BestTime { get; private set; }
         public bool IsNewBest { get; private set; }
 
-        string BestTimeKey => "BestTime_" + SceneManager.GetActiveScene().name;
+        /// <summary>다음 스테이지 씬 이름. 없거나 아직 만들어지지 않았으면 null</summary>
+        public string NextStageScene
+        {
+            get
+            {
+                if (catalog == null)
+                    return null;
+                int next = catalog.IndexOf(SceneName) + 1;
+                if (next <= 0 || next >= catalog.Count || !catalog.IsPlayable(next))
+                    return null;
+                return catalog.Get(next).sceneName;
+            }
+        }
+
+        static string SceneName => SceneManager.GetActiveScene().name;
 
         void Awake()
         {
@@ -39,7 +55,7 @@ namespace SkyHopper
         void Start()
         {
             TotalCoins = Coin.ActiveCount;
-            BestTime = PlayerPrefs.GetFloat(BestTimeKey, 0f);
+            BestTime = SaveData.GetBestTime(SceneName);
         }
 
         void Update()
@@ -48,9 +64,8 @@ namespace SkyHopper
                 ElapsedTime += Time.deltaTime;
 
             var keyboard = Keyboard.current;
-            // 다시 시작 (씬이 Build Profiles의 씬 목록에 들어 있어야 동작)
-            if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (keyboard != null && keyboard.rKey.wasPressedThisFrame && !PauseMenu.IsPaused)
+                SceneLoader.Restart();
         }
 
         public void AddCoin()
@@ -64,17 +79,13 @@ namespace SkyHopper
                 return;
             IsCleared = true;
 
-            if (BestTime <= 0f || ElapsedTime < BestTime)
-            {
-                IsNewBest = true;
-                BestTime = ElapsedTime;
-                PlayerPrefs.SetFloat(BestTimeKey, BestTime);
-                PlayerPrefs.Save();
-            }
+            IsNewBest = SaveData.RecordClear(SceneName, ElapsedTime, CoinCount, TotalCoins);
+            BestTime = SaveData.GetBestTime(SceneName);
 
-            // 클리어 후에는 조작을 멈춤
+            // 클리어 후에는 조작을 멈추고 버튼을 누를 수 있게 커서를 보여 줌
             if (player != null)
                 player.enabled = false;
+            GameCursor.SetLocked(false);
         }
     }
 }

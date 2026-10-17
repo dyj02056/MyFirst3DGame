@@ -101,6 +101,10 @@ namespace SkyHopper
 
         void Update()
         {
+            // 일시정지 중에는 입력을 받지 않음
+            if (Time.timeScale == 0f)
+                return;
+
             // 이번 프레임에 움직인 발판들의 위치를 물리 엔진에 먼저 반영
             Physics.SyncTransforms();
             FollowGround();

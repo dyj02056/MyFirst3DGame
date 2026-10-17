@@ -1,7 +1,5 @@
-using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 using static SkyHopper.EditorTools.SceneBuilderUtility;
 
 namespace SkyHopper.EditorTools
@@ -102,8 +100,7 @@ namespace SkyHopper.EditorTools
 
             var player = CreatePlayer(new Vector3(0f, 0.1f, -4f), Quaternion.identity);
             CreateCamera(player);
-            CreateStageManager(player);
-            CreateHUD();
+            StageUIBuilder.CreateStageSystems(player);
 
             SaveScene(scene, ScenePath);
             Selection.activeGameObject = player.gameObject;
@@ -186,66 +183,5 @@ namespace SkyHopper.EditorTools
             }
         }
 
-        static void CreateStageManager(PlayerController player)
-        {
-            var manager = new GameObject("StageManager").AddComponent<StageManager>();
-            SetReference(manager, "player", player);
-        }
-
-        static void CreateHUD()
-        {
-            var canvasObject = new GameObject("HUD");
-            var canvas = canvasObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var scaler = canvasObject.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
-
-            var timeText = CreateText(canvasObject.transform, "TimeText", new Vector2(0f, 1f),
-                new Vector2(40f, -30f), new Vector2(600f, 70f), 48f, TextAlignmentOptions.TopLeft);
-            var coinText = CreateText(canvasObject.transform, "CoinText", new Vector2(0f, 1f),
-                new Vector2(40f, -95f), new Vector2(600f, 70f), 48f, TextAlignmentOptions.TopLeft);
-            var hint = CreateText(canvasObject.transform, "HintText", new Vector2(0f, 0f),
-                new Vector2(40f, 30f), new Vector2(900f, 50f), 28f, TextAlignmentOptions.BottomLeft);
-            hint.text = "WASD Move   SPACE Jump x2   SHIFT Dash   R Restart   ESC Mouse";
-            hint.color = new Color(1f, 1f, 1f, 0.8f);
-
-            var panel = new GameObject("ClearPanel", typeof(RectTransform), typeof(Image));
-            panel.transform.SetParent(canvasObject.transform, false);
-            var panelRect = (RectTransform)panel.transform;
-            panelRect.anchorMin = panelRect.anchorMax = panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.sizeDelta = new Vector2(900f, 520f);
-            panel.GetComponent<Image>().color = new Color(0.05f, 0.1f, 0.2f, 0.75f);
-
-            var clearText = CreateText(panel.transform, "ClearText", new Vector2(0.5f, 0.5f),
-                Vector2.zero, new Vector2(860f, 480f), 72f, TextAlignmentOptions.Center);
-            clearText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-            var hud = canvasObject.AddComponent<StageHUD>();
-            SetReference(hud, "timeText", timeText);
-            SetReference(hud, "coinText", coinText);
-            SetReference(hud, "clearPanel", panel);
-            SetReference(hud, "clearText", clearText);
-        }
-
-        static TextMeshProUGUI CreateText(Transform parent, string name, Vector2 anchor, Vector2 position,
-            Vector2 size, float fontSize, TextAlignmentOptions alignment)
-        {
-            var textObject = new GameObject(name, typeof(RectTransform));
-            textObject.transform.SetParent(parent, false);
-            var rect = (RectTransform)textObject.transform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = anchor;
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
-
-            var text = textObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.fontStyle = FontStyles.Bold;
-            text.alignment = alignment;
-            text.color = Color.white;
-            text.raycastTarget = false;
-            return text;
-        }
     }
 }

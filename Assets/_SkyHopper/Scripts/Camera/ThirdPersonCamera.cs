@@ -6,7 +6,7 @@ namespace SkyHopper
     /// <summary>
     /// 마우스(또는 오른쪽 스틱)로 플레이어 주위를 도는 3인칭 카메라.
     /// 벽에 가려지면 카메라가 플레이어 쪽으로 당겨집니다.
-    /// 게임 화면을 클릭하면 마우스 커서가 숨고, Esc를 누르면 다시 나타납니다.
+    /// 게임 화면을 클릭하면 마우스 커서가 숨습니다. 감도는 설정 화면의 배율(GameSettings)이 곱해집니다.
     /// </summary>
     public class ThirdPersonCamera : MonoBehaviour
     {
@@ -54,29 +54,36 @@ namespace SkyHopper
             if (target != null)
                 yaw = target.eulerAngles.y;
             currentDistance = distance;
-            SetCursorLocked(true);
+            GameCursor.SetLocked(true);
         }
 
         void Update()
         {
             var keyboard = Keyboard.current;
             var mouse = Mouse.current;
-            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
-                SetCursorLocked(false);
-            else if (mouse != null && mouse.leftButton.wasPressedThisFrame && Cursor.lockState != CursorLockMode.Locked)
-                SetCursorLocked(true);
+
+            // 일시정지 메뉴가 없는 테스트 맵에서는 Esc로 커서만 보이게 함
+            if (PauseMenu.Instance == null && keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+                GameCursor.SetLocked(false);
+            else if (mouse != null && mouse.leftButton.wasPressedThisFrame && !GameCursor.IsLocked && CanControl())
+                GameCursor.SetLocked(true);
         }
+
+        /// <summary>일시정지 중이거나 클리어 화면에서는 카메라를 돌리지 않음</summary>
+        static bool CanControl() =>
+            !PauseMenu.IsPaused && (StageManager.Instance == null || !StageManager.Instance.IsCleared);
 
         void LateUpdate()
         {
             if (target == null)
                 return;
 
-            if (input != null)
+            if (input != null && CanControl())
             {
-                Vector2 look = input.StickLook * (stickSensitivity * Time.deltaTime);
-                if (Cursor.lockState == CursorLockMode.Locked)
-                    look += input.MouseLook * mouseSensitivity;
+                float sensitivity = GameSettings.MouseSensitivity;
+                Vector2 look = input.StickLook * (stickSensitivity * sensitivity * Time.deltaTime);
+                if (GameCursor.IsLocked)
+                    look += input.MouseLook * (mouseSensitivity * sensitivity);
 
                 yaw += look.x;
                 pitch += invertY ? look.y : -look.y;
@@ -109,12 +116,6 @@ namespace SkyHopper
                 result = Mathf.Min(result, Mathf.Max(minDistance, hits[i].distance));
             }
             return result;
-        }
-
-        static void SetCursorLocked(bool locked)
-        {
-            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !locked;
         }
     }
 }

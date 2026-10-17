@@ -95,6 +95,7 @@
 ## 10. 그래픽·사운드 자원
 직접 모델링하지 않고 **무료 로우폴리 에셋**을 사용합니다.
 - 3D 모델·캐릭터: Kenney (kenney.nl), Quaternius (quaternius.com) — 무료이고 상업적 사용도 가능 (CC0)
+- 한글 글꼴: 주아(Jua, SIL OFL 1.1) — `Assets/_SkyHopper/Fonts` (라이선스 문서 `Jua-OFL.txt` 함께 보관)
 - 효과음: Kenney 오디오 팩 등 CC0 사운드
 - 배경음악: 무료 라이선스 음악 (출처 기록 필수)
 
