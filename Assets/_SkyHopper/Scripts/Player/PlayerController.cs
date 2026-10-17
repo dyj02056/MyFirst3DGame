@@ -84,6 +84,8 @@ namespace SkyHopper
         public bool IsGrounded { get; private set; }
         public bool IsDashing => Time.time < dashEndTime;
         public bool IsStunned => Time.time < stunEndTime;
+        /// <summary>위아래 속도 (양수 = 올라가는 중, 음수 = 떨어지는 중)</summary>
+        public float VerticalVelocity => verticalVelocity;
         public float HorizontalSpeed => horizontalVelocity.magnitude;
 
         void Awake()

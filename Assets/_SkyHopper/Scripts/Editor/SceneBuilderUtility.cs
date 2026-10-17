@@ -220,6 +220,38 @@ namespace SkyHopper.EditorTools
             return material;
         }
 
+        /// <summary>움직이는 충돌체에는 Kinematic Rigidbody를 붙이는 것이 물리 엔진에 효율적</summary>
+        internal static void AddKinematicBody(GameObject target)
+        {
+            var body = target.AddComponent<Rigidbody>();
+            body.isKinematic = true;
+            body.useGravity = false;
+        }
+
+        /// <summary>씬에 만든 오브젝트를 프리팹 파일로 저장하고, 씬에서는 지움</summary>
+        internal static GameObject SavePrefab(GameObject source, string folder)
+        {
+            Directory.CreateDirectory(folder);
+            var prefab = PrefabUtility.SaveAsPrefabAsset(source, folder + "/" + source.name + ".prefab");
+            Object.DestroyImmediate(source);
+            return prefab;
+        }
+
+        /// <summary>프리팹을 씬에 배치 (프리팹과 연결된 상태 유지)</summary>
+        internal static GameObject Place(GameObject prefab, Transform parent, Vector3 position)
+        {
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+            instance.transform.position = position;
+            return instance;
+        }
+
+        internal static void SetVector3(Object component, string fieldName, Vector3 value)
+        {
+            var serialized = new SerializedObject(component);
+            serialized.FindProperty(fieldName).vector3Value = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         internal static T LoadAsset<T>(string path) where T : Object
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);

@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 using static SkyHopper.EditorTools.SceneBuilderUtility;
@@ -180,39 +179,8 @@ namespace SkyHopper.EditorTools
             return root;
         }
 
-        // ───────────── 도우미 ─────────────
-
-        /// <summary>움직이는 충돌체에는 Kinematic Rigidbody를 붙이는 것이 물리 엔진에 효율적</summary>
-        static void AddKinematicBody(GameObject target)
-        {
-            var body = target.AddComponent<Rigidbody>();
-            body.isKinematic = true;
-            body.useGravity = false;
-        }
-
         static Material DarkMetal() => GetOrCreateColorMaterial("SH_DarkMetal", new Color(0.2f, 0.2f, 0.24f));
 
-        static GameObject SavePrefab(GameObject source)
-        {
-            Directory.CreateDirectory(PrefabFolder);
-            string path = PrefabFolder + "/" + source.name + ".prefab";
-            var prefab = PrefabUtility.SaveAsPrefabAsset(source, path);
-            Object.DestroyImmediate(source);
-            return prefab;
-        }
-
-        static GameObject Place(GameObject prefab, Transform parent, Vector3 position)
-        {
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
-            instance.transform.position = position;
-            return instance;
-        }
-
-        static void SetVector3(Object component, string fieldName, Vector3 value)
-        {
-            var serialized = new SerializedObject(component);
-            serialized.FindProperty(fieldName).vector3Value = value;
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-        }
+        static GameObject SavePrefab(GameObject source) => SceneBuilderUtility.SavePrefab(source, PrefabFolder);
     }
 }
