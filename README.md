@@ -3,6 +3,8 @@
 구름 위 **하늘섬**을 **더블점프와 대시**로 건너며 코인을 모으고 최단 기록에 도전하는 로우폴리 3D 플랫포머입니다.
 자세한 기획은 [GAME_DESIGN.md](GAME_DESIGN.md)를 참고하세요.
 
+▶ **브라우저에서 바로 플레이: https://sky-hopper-eight.vercel.app**
+
 ## 개발 환경
 - Unity **6.6 (6000.6.6f1)**, URP
 - 새 Input System
@@ -33,6 +35,12 @@
 | Windows 빌드 (exe) | `Builds/Windows/SkyHopper.exe` — 폴더째 압축해서 공유 |
 | 웹 빌드 (WebGL) | `Builds/WebGL` — 웹 서버나 itch.io에 업로드 |
 | 웹 빌드 후 브라우저에서 실행 | 빌드 후 내 컴퓨터에서 바로 브라우저로 열어 봄 |
+
+- 이미 만든 웹 빌드를 다시 열 때: `웹게임_실행.bat` 더블클릭 (Python 필요)
+- 웹 빌드를 Vercel에 다시 배포할 때 (`Builds/WebGL` 폴더에서):
+  ```
+  npx vercel deploy --prod --yes
+  ```
 
 ## 조작
 | 키 | 동작 |
