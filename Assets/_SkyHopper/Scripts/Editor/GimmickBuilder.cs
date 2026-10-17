@@ -17,7 +17,6 @@ namespace SkyHopper.EditorTools
     {
         const string ScenePath = SceneFolder + "/GimmickTest.unity";
         const string PrefabFolder = "Assets/_SkyHopper/Prefabs/Gimmicks";
-        const string HitSoundPath = "Assets/SourceFiles/SoundFX/SFX_Respawn.ogg";
 
         [MenuItem("Sky Hopper/3주차 장치 테스트 맵 만들기", priority = 101)]
         static void Build()
@@ -74,6 +73,7 @@ namespace SkyHopper.EditorTools
 
             var player = CreatePlayer(new Vector3(0f, 0.1f, -3f), Quaternion.identity);
             CreateCamera(player);
+            FeedbackBuilder.CreateGameFeedback(null); // 효과음·파티클 (테스트 맵은 배경음악 없음)
 
             SaveScene(scene, ScenePath);
             Selection.activeGameObject = player.gameObject;
@@ -126,7 +126,6 @@ namespace SkyHopper.EditorTools
                 new Vector3(0f, 0.2f, 0f), new Vector3(1.7f, 0.1f, 1.7f), LoadMaterial("Material_Simple_Purple"));
 
             SetReference(pad, "springVisual", spring.transform);
-            SetReference(pad, "launchSound", LoadAsset<AudioClip>(PickupSoundPath));
             return root;
         }
 
@@ -138,8 +137,7 @@ namespace SkyHopper.EditorTools
             trigger.center = new Vector3(0f, 0.35f, 0f);
             trigger.size = new Vector3(2f, 0.7f, 2f);
 
-            var hazard = root.AddComponent<Hazard>();
-            SetReference(hazard, "hitSound", LoadAsset<AudioClip>(HitSoundPath));
+            root.AddComponent<Hazard>();
 
             CreateVisual(PrimitiveType.Cube, "Base", root.transform,
                 new Vector3(0f, 0.05f, 0f), new Vector3(2f, 0.1f, 2f), DarkMetal());
@@ -175,7 +173,6 @@ namespace SkyHopper.EditorTools
             bar.GetComponent<BoxCollider>().isTrigger = true;
             var knockback = bar.AddComponent<KnockbackZone>();
             SetReference(knockback, "rotator", rotator);
-            SetReference(knockback, "hitSound", LoadAsset<AudioClip>(HitSoundPath));
             return root;
         }
 

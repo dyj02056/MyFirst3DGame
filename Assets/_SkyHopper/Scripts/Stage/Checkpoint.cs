@@ -11,7 +11,6 @@ namespace SkyHopper
     {
         [SerializeField] Renderer flagRenderer;
         [SerializeField] Material activeMaterial;
-        [SerializeField] AudioClip activateSound;
 
         bool activated;
 
@@ -28,8 +27,8 @@ namespace SkyHopper
 
             if (flagRenderer != null && activeMaterial != null)
                 flagRenderer.sharedMaterial = activeMaterial;
-            if (activateSound != null)
-                AudioSource.PlayClipAtPoint(activateSound, transform.position);
+            Vector3 flagPosition = flagRenderer != null ? flagRenderer.transform.position : transform.position + Vector3.up * 2f;
+            GameFeedback.Play(Feedback.Checkpoint, flagPosition);
         }
     }
 }

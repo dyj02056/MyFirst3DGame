@@ -17,7 +17,6 @@ namespace SkyHopper.EditorTools
     {
         const string ScenePath = SceneFolder + "/EnemyTest.unity";
         const string PrefabFolder = "Assets/_SkyHopper/Prefabs/Enemies";
-        const string HitSoundPath = "Assets/SourceFiles/SoundFX/SFX_Respawn.ogg";
 
         [MenuItem("Sky Hopper/4주차 적 테스트 맵 만들기", priority = 102)]
         static void Build()
@@ -62,6 +61,7 @@ namespace SkyHopper.EditorTools
 
             var player = CreatePlayer(new Vector3(0f, 0.1f, -3f), Quaternion.identity);
             CreateCamera(player);
+            FeedbackBuilder.CreateGameFeedback(null); // 효과음·파티클 (테스트 맵은 배경음악 없음)
 
             SaveScene(scene, ScenePath);
             Selection.activeGameObject = player.gameObject;
@@ -73,8 +73,7 @@ namespace SkyHopper.EditorTools
             var root = new GameObject("SH_PatrolEnemy");
             AddKinematicBody(root);
             AddTrigger(root, new Vector3(1.2f, 1.1f, 1.2f));
-            var enemy = root.AddComponent<PatrolEnemy>();
-            SetSounds(enemy);
+            root.AddComponent<PatrolEnemy>();
 
             var body = GetOrCreateColorMaterial("SH_EnemyPatrol", new Color(0.9f, 0.32f, 0.25f));
             CreateVisual(PrimitiveType.Sphere, "Body", root.transform,
@@ -90,7 +89,6 @@ namespace SkyHopper.EditorTools
             AddKinematicBody(root);
             AddTrigger(root, new Vector3(1.4f, 1.3f, 1.4f));
             var enemy = root.AddComponent<ChaserEnemy>();
-            SetSounds(enemy);
 
             var body = GetOrCreateColorMaterial("SH_EnemyChaser", new Color(0.5f, 0.28f, 0.8f));
             var yellow = LoadMaterial("Material_Simple_Yellow");
@@ -124,12 +122,6 @@ namespace SkyHopper.EditorTools
             trigger.isTrigger = true;
             trigger.center = new Vector3(0f, size.y / 2f, 0f);
             trigger.size = size;
-        }
-
-        static void SetSounds(Enemy enemy)
-        {
-            SetReference(enemy, "stompSound", LoadAsset<AudioClip>(PickupSoundPath));
-            SetReference(enemy, "hitSound", LoadAsset<AudioClip>(HitSoundPath));
         }
 
         static void CreateEyes(Transform root, float height, float forward, float tilt)

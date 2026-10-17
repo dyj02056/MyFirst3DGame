@@ -12,7 +12,6 @@ namespace SkyHopper
         [SerializeField] float spinSpeed = 180f;
         [SerializeField] float bobHeight = 0.15f;
         [SerializeField] float bobSpeed = 2f;
-        [SerializeField] AudioClip pickupSound;
 
         Vector3 startPosition;
         float bobOffset;
@@ -41,9 +40,7 @@ namespace SkyHopper
 
             if (StageManager.Instance != null)
                 StageManager.Instance.AddCoin();
-            if (pickupSound != null)
-                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
-
+            GameFeedback.Play(Feedback.Coin, transform.position);
             Destroy(gameObject);
         }
     }

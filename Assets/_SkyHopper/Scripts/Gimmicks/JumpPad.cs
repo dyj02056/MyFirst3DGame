@@ -9,7 +9,6 @@ namespace SkyHopper
         [SerializeField] float launchHeight = 7f;
         [Tooltip("튕길 때 납작해지는 모양 (비워 둬도 됨)")]
         [SerializeField] Transform springVisual;
-        [SerializeField] AudioClip launchSound;
 
         Vector3 springBaseScale;
         float squashTimer;
@@ -24,8 +23,7 @@ namespace SkyHopper
         {
             player.Launch(launchHeight);
             squashTimer = 0.25f;
-            if (launchSound != null)
-                AudioSource.PlayClipAtPoint(launchSound, transform.position);
+            GameFeedback.Play(Feedback.JumpPad, transform.position + Vector3.up * 0.3f);
         }
 
         void Update()

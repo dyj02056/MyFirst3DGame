@@ -2,12 +2,10 @@ using UnityEngine;
 
 namespace SkyHopper
 {
-    /// <summary>플레이어가 들어오면 스테이지 클리어.</summary>
+    /// <summary>플레이어가 들어오면 스테이지 클리어 (빰빠밤 소리와 색종이 파티클).</summary>
     [RequireComponent(typeof(Collider))]
     public class Goal : MonoBehaviour
     {
-        [SerializeField] AudioClip clearSound;
-
         void OnTriggerEnter(Collider other)
         {
             if (other.GetComponentInParent<PlayerController>() == null)
@@ -16,8 +14,7 @@ namespace SkyHopper
                 return;
 
             StageManager.Instance.CompleteStage();
-            if (clearSound != null)
-                AudioSource.PlayClipAtPoint(clearSound, transform.position);
+            GameFeedback.Play(Feedback.Clear, transform.position + Vector3.up * 3f);
         }
     }
 }

@@ -14,8 +14,6 @@ namespace SkyHopper
         [SerializeField] float stompHeight = 0.6f;
         [Tooltip("밟은 뒤 플레이어가 튀어 오르는 높이 (m)")]
         [SerializeField] float stompBounceHeight = 3f;
-        [SerializeField] AudioClip stompSound;
-        [SerializeField] AudioClip hitSound;
 
         const float DefeatDuration = 0.3f;
 
@@ -59,8 +57,6 @@ namespace SkyHopper
             }
             else
             {
-                if (hitSound != null)
-                    AudioSource.PlayClipAtPoint(hitSound, player.transform.position);
                 player.Die();
             }
         }
@@ -70,8 +66,7 @@ namespace SkyHopper
             IsDefeated = true;
             foreach (var c in GetComponentsInChildren<Collider>())
                 c.enabled = false;
-            if (stompSound != null)
-                AudioSource.PlayClipAtPoint(stompSound, transform.position);
+            GameFeedback.Play(Feedback.Stomp, transform.position + Vector3.up * 0.6f);
         }
 
         void PlayDefeatAnimation()

@@ -177,6 +177,7 @@ namespace SkyHopper.EditorTools
             colors.disabledColor = new Color(0.55f, 0.55f, 0.6f, 0.7f);
             colors.fadeDuration = 0.08f;
             button.colors = colors;
+            rect.gameObject.AddComponent<ButtonClickSound>();
 
             labelText = CreateText(rect, "Label", label, fontSize, TextAlignmentOptions.Center,
                 new Vector2(0.5f, 0.5f), Vector2.zero, size);
@@ -192,14 +193,16 @@ namespace SkyHopper.EditorTools
         internal static SettingsPanel CreateSettingsPanel(Transform parent)
         {
             var panel = CreatePanel(parent, "SettingsPanel", PanelColor, new Vector2(0.5f, 0.5f), Vector2.zero,
-                new Vector2(1000f, 560f));
+                new Vector2(1000f, 660f));
             CreateText(panel.transform, "Title", "설정", 72f, TextAlignmentOptions.Center,
                 new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(900f, 100f));
 
-            CreateSliderRow(panel.transform, "Sensitivity", "마우스 감도", new Vector2(0f, 60f),
+            CreateSliderRow(panel.transform, "Sensitivity", "마우스 감도", new Vector2(0f, 110f),
                 out var sensitivitySlider, out var sensitivityValue);
-            CreateSliderRow(panel.transform, "Volume", "음량", new Vector2(0f, -50f),
+            CreateSliderRow(panel.transform, "Volume", "전체 음량", new Vector2(0f, 0f),
                 out var volumeSlider, out var volumeValue);
+            CreateSliderRow(panel.transform, "Music", "배경음악", new Vector2(0f, -110f),
+                out var musicSlider, out var musicValue);
 
             var close = CreateButton(panel.transform, "CloseButton", "닫기", new Vector2(320f, 90f));
             var closeRect = (RectTransform)close.transform;
@@ -211,6 +214,8 @@ namespace SkyHopper.EditorTools
             SceneBuilderUtility.SetReference(settings, "sensitivityValue", sensitivityValue);
             SceneBuilderUtility.SetReference(settings, "volumeSlider", volumeSlider);
             SceneBuilderUtility.SetReference(settings, "volumeValue", volumeValue);
+            SceneBuilderUtility.SetReference(settings, "musicSlider", musicSlider);
+            SceneBuilderUtility.SetReference(settings, "musicValue", musicValue);
             SceneBuilderUtility.SetReference(settings, "closeButton", close);
 
             panel.gameObject.SetActive(false);

@@ -25,7 +25,6 @@ namespace SkyHopper.EditorTools
 
         readonly Transform islands, coins, stars, checkpoints, gimmicks, enemies, clouds;
         readonly Material coinMaterial, goldTrim, starMaterial, cloudMaterial;
-        readonly AudioClip pickupSound;
 
         /// <summary>새 스테이지 씬을 시작. 사용자가 취소하면 null</summary>
         internal static StageBuildKit Begin(string sceneName, int catalogIndex, bool askUser)
@@ -56,7 +55,6 @@ namespace SkyHopper.EditorTools
             goldTrim = LoadMaterial("Material_Simple_Yellow");
             starMaterial = GetOrCreateColorMaterial("SH_Star", new Color(1f, 0.84f, 0.2f));
             cloudMaterial = GetOrCreateColorMaterial("SH_Cloud", new Color(0.97f, 0.98f, 1f));
-            pickupSound = LoadAsset<AudioClip>(PickupSoundPath);
         }
 
         static Transform Group(string name) => new GameObject(name).transform;
@@ -91,7 +89,6 @@ namespace SkyHopper.EditorTools
             trigger.radius = 0.6f;
 
             var coinScript = coin.AddComponent<SkyHopper.Coin>();
-            SetReference(coinScript, "pickupSound", pickupSound);
 
             var visual = CreateVisual(PrimitiveType.Cylinder, "Visual", coin.transform,
                 Vector3.zero, new Vector3(0.7f, 0.06f, 0.7f), coinMaterial);
@@ -127,7 +124,6 @@ namespace SkyHopper.EditorTools
             trigger.radius = 0.8f;
 
             var starScript = star.AddComponent<SkyHopper.Star>();
-            SetReference(starScript, "pickupSound", pickupSound);
 
             CreateVisual(PrimitiveType.Sphere, "Core", star.transform, Vector3.zero, new Vector3(0.5f, 0.5f, 0.3f), starMaterial);
             for (int i = 0; i < 5; i++)
@@ -168,7 +164,6 @@ namespace SkyHopper.EditorTools
             trigger.size = new Vector3(3.4f, 4f, 1.5f);
 
             var goalScript = goal.AddComponent<SkyHopper.Goal>();
-            SetReference(goalScript, "clearSound", pickupSound);
         }
 
         // ───────────── 장치 (3주차 프리팹) ─────────────
@@ -251,6 +246,10 @@ namespace SkyHopper.EditorTools
             var player = CreatePlayer(spawnPosition, Quaternion.Euler(0f, spawnYaw, 0f));
             CreateCamera(player);
             StageUIBuilder.CreateStageSystems(player);
+
+            // 배경음악: 스테이지 1~3은 신나는 곡, 4~5는 긴장감 있는 곡
+            string music = catalogIndex >= 3 ? FeedbackBuilder.HardStageMusic : FeedbackBuilder.StageMusic;
+            FeedbackBuilder.CreateGameFeedback(music, 0.45f);
 
             SaveScene(scene, scenePath);
             RegisterStageInCatalog(catalogIndex, sceneName);

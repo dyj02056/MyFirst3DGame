@@ -90,6 +90,8 @@ namespace SkyHopper.EditorTools
             SetReferenceArray(titleMenu, "stageLabels", stageLabels);
             stageSelect.gameObject.SetActive(false);
 
+            FeedbackBuilder.CreateGameFeedback(FeedbackBuilder.TitleMusic, 0.5f);
+
             SaveScene(scene, ScenePath);
             MoveSceneToFront(ScenePath);
             Debug.Log("[Sky Hopper] 타이틀 화면을 만들고 게임 첫 화면으로 지정했습니다: " + ScenePath);

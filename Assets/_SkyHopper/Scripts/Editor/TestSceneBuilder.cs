@@ -29,6 +29,7 @@ namespace SkyHopper.EditorTools
             CreateCourse();
             var player = CreatePlayer(new Vector3(0f, 0.1f, -5f), Quaternion.identity);
             CreateCamera(player);
+            FeedbackBuilder.CreateGameFeedback(null); // 효과음·파티클 (테스트 맵은 배경음악 없음)
 
             SaveScene(scene, ScenePath);
             Selection.activeGameObject = player.gameObject;

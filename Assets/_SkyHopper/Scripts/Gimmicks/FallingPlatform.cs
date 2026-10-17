@@ -39,6 +39,7 @@ namespace SkyHopper
                 return;
             state = State.Shaking;
             timer = 0f;
+            GameFeedback.Play(Feedback.PlatformCrack, transform.position);
         }
 
         void Update()

@@ -86,7 +86,50 @@ namespace SkyHopper.EditorTools
             CreateVisual(PrimitiveType.Cube, "Nose", player.transform,
                 new Vector3(0f, 1.35f, 0.38f), new Vector3(0.3f, 0.15f, 0.2f), LoadMaterial("Material_Simple_Yellow"));
 
+            // 소리·효과 + 대시할 때 뒤에 남는 분홍 꼬리
+            var feedback = player.AddComponent<PlayerFeedback>();
+            SetReference(feedback, "dashTrail", CreateDashTrail(player.transform));
+
             return playerController;
+        }
+
+        static TrailRenderer CreateDashTrail(Transform player)
+        {
+            var trailObject = new GameObject("DashTrail");
+            trailObject.transform.SetParent(player, false);
+            trailObject.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+
+            var trail = trailObject.AddComponent<TrailRenderer>();
+            trail.time = 0.25f;
+            trail.minVertexDistance = 0.1f;
+            trail.widthCurve = AnimationCurve.Linear(0f, 0.9f, 1f, 0f);
+            var colors = new Gradient();
+            colors.SetKeys(
+                new[] { new GradientColorKey(new Color(1f, 0.55f, 0.8f), 0f), new GradientColorKey(Color.white, 1f) },
+                new[] { new GradientAlphaKey(0.8f, 0f), new GradientAlphaKey(0f, 1f) });
+            trail.colorGradient = colors;
+            trail.shadowCastingMode = ShadowCastingMode.Off;
+            trail.emitting = false;
+            trail.sharedMaterial = GetOrCreateTrailMaterial();
+            return trail;
+        }
+
+        /// <summary>꼬리용 반투명 머티리얼 (템플릿의 파티클 머티리얼을 복사해 그림만 뺌)</summary>
+        static Material GetOrCreateTrailMaterial()
+        {
+            const string path = MaterialFolder + "/SH_Trail.mat";
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material != null)
+                return material;
+
+            var source = AssetDatabase.LoadAssetAtPath<Material>("Assets/SourceFiles/VFX/GlowMaterial.mat");
+            if (source == null)
+                return null;
+            material = new Material(source);
+            material.SetTexture("_BaseMap", null);
+            Directory.CreateDirectory(MaterialFolder);
+            AssetDatabase.CreateAsset(material, path);
+            return material;
         }
 
         internal static void CreateCamera(PlayerController player)
@@ -176,7 +219,6 @@ namespace SkyHopper.EditorTools
             var checkpointScript = checkpoint.AddComponent<Checkpoint>();
             SetReference(checkpointScript, "flagRenderer", flag.GetComponent<Renderer>());
             SetReference(checkpointScript, "activeMaterial", LoadMaterial("Material_Simple_Green"));
-            SetReference(checkpointScript, "activateSound", LoadAsset<AudioClip>(PickupSoundPath));
         }
 
         /// <summary>충돌 없이 보이기만 하는 모양</summary>

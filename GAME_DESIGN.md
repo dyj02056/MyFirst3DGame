@@ -96,8 +96,9 @@
 직접 모델링하지 않고 **무료 로우폴리 에셋**을 사용합니다.
 - 3D 모델·캐릭터: Kenney (kenney.nl), Quaternius (quaternius.com) — 무료이고 상업적 사용도 가능 (CC0)
 - 한글 글꼴: 주아(Jua, SIL OFL 1.1) — `Assets/_SkyHopper/Fonts` (라이선스 문서 `Jua-OFL.txt` 함께 보관)
-- 효과음: Kenney 오디오 팩 등 CC0 사운드
-- 배경음악: 무료 라이선스 음악 (출처 기록 필수)
+- 효과음: `Tools/make_sfx.py`로 직접 합성한 소리(`Assets/_SkyHopper/Audio/SFX`) + 템플릿의 발소리·착지·리스폰 소리
+- 배경음악: Unity 템플릿 곡 — 타이틀 Ethereal, 스테이지 1~3 Exciting, 4~5 Suspenseful
+- 소리·파티클 표: `Assets/_SkyHopper/Data/FeedbackLibrary` (Inspector에서 소리·음량·파티클 변경 가능)
 
 ## 11. 기술 방향
 - 렌더링: URP, 베이크 라이팅 위주, 실시간 그림자는 방향광 1개만

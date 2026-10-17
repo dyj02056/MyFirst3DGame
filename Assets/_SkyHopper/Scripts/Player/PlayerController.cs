@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace SkyHopper
@@ -81,6 +82,20 @@ namespace SkyHopper
         Vector3 spawnPosition;
         Quaternion spawnRotation;
 
+        // 다른 스크립트(PlayerFeedback 등)에 "이런 일이 생겼다"고 알려 주는 이벤트
+        public event Action Jumped;
+        public event Action DoubleJumped;
+        public event Action Dashed;
+        /// <summary>잠깐 이상 공중에 있다가 땅에 닿았을 때</summary>
+        public event Action Landed;
+        public event Action KnockedBack;
+        /// <summary>실패한 위치를 알려 줌 (그 직후 Respawned가 이어짐)</summary>
+        public event Action<Vector3> Died;
+        public event Action Respawned;
+
+        const float MinAirTimeForLanding = 0.15f;
+        float airTime;
+
         public bool IsGrounded { get; private set; }
         public bool IsDashing => Time.time < dashEndTime;
         public bool IsStunned => Time.time < stunEndTime;
@@ -155,6 +170,17 @@ namespace SkyHopper
             CollisionFlags flags = controller.Move(velocity * Time.deltaTime);
             IsGrounded = controller.isGrounded;
 
+            if (IsGrounded)
+            {
+                if (airTime >= MinAirTimeForLanding)
+                    Landed?.Invoke();
+                airTime = 0f;
+            }
+            else
+            {
+                airTime += Time.deltaTime;
+            }
+
             // 천장에 머리를 부딪치면 바로 떨어지기 시작
             if ((flags & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
                 verticalVelocity = 0f;
@@ -162,7 +188,7 @@ namespace SkyHopper
             UpdateGround();
 
             if (transform.position.y < fallLimitY)
-                Respawn();
+                Die();
         }
 
         void OnControllerColliderHit(ControllerColliderHit hit)
@@ -234,6 +260,7 @@ namespace SkyHopper
                 verticalVelocity = Mathf.Max(verticalVelocity, VelocityForHeight(jumpHeight));
                 lastGroundedTime = float.NegativeInfinity;
                 lastJumpPressedTime = float.NegativeInfinity;
+                Jumped?.Invoke();
             }
             else if (!canGroundJump && hasDoubleJump && input.JumpPressed)
             {
@@ -242,6 +269,7 @@ namespace SkyHopper
                 verticalVelocity = Mathf.Sqrt(rising * rising + 2f * doubleJumpHeight * -gravity);
                 hasDoubleJump = false;
                 lastJumpPressedTime = float.NegativeInfinity;
+                DoubleJumped?.Invoke();
             }
         }
 
@@ -274,6 +302,7 @@ namespace SkyHopper
                 hasAirDash = false;
 
             transform.rotation = Quaternion.LookRotation(dashDirection);
+            Dashed?.Invoke();
         }
 
         void RotateTowards(Vector3 moveDirection)
@@ -314,11 +343,13 @@ namespace SkyHopper
             dashEndTime = float.NegativeInfinity;
             wasDashing = false;
             LeaveGround();
+            KnockedBack?.Invoke();
         }
 
-        /// <summary>가시 등 함정에 닿았을 때</summary>
+        /// <summary>가시·적에 닿거나 아래로 떨어졌을 때: 마지막 체크포인트에서 다시 시작</summary>
         public void Die()
         {
+            Died?.Invoke(transform.position);
             Respawn();
         }
 
@@ -342,6 +373,8 @@ namespace SkyHopper
             stunEndTime = float.NegativeInfinity;
             wasDashing = false;
             groundTransform = null;
+            airTime = 0f;
+            Respawned?.Invoke();
         }
     }
 }

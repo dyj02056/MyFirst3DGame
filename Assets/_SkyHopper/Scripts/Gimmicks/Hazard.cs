@@ -6,17 +6,11 @@ namespace SkyHopper
     [RequireComponent(typeof(Collider))]
     public class Hazard : MonoBehaviour
     {
-        [SerializeField] AudioClip hitSound;
-
         void OnTriggerEnter(Collider other)
         {
             var player = other.GetComponentInParent<PlayerController>();
-            if (player == null)
-                return;
-
-            if (hitSound != null)
-                AudioSource.PlayClipAtPoint(hitSound, player.transform.position);
-            player.Die();
+            if (player != null)
+                player.Die();
         }
     }
 }

@@ -14,7 +14,6 @@ namespace SkyHopper
         [SerializeField] float pushSpeed = 12f;
         [Tooltip("위로 튀어 오르는 높이 (m)")]
         [SerializeField] float pushUpHeight = 1.2f;
-        [SerializeField] AudioClip hitSound;
 
         void OnTriggerEnter(Collider other)
         {
@@ -38,8 +37,6 @@ namespace SkyHopper
                 direction = -player.transform.forward;
 
             player.Knockback(direction.normalized * pushSpeed, pushUpHeight);
-            if (hitSound != null)
-                AudioSource.PlayClipAtPoint(hitSound, player.transform.position);
         }
     }
 }
