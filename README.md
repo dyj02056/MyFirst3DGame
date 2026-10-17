@@ -25,6 +25,15 @@
 | 1주차 테스트 맵 만들기 | 조작감 테스트용 `TestMovement.unity` |
 | 3주차 장치 테스트 맵 만들기 | 장치 프리팹 5종 + `GimmickTest.unity` |
 
+## 빌드
+상단 메뉴 **Sky Hopper → 빌드**에서 고르세요. 결과물은 `Builds/` 폴더에 생기며 git에는 올라가지 않습니다.
+
+| 메뉴 | 결과 |
+|---|---|
+| Windows 빌드 (exe) | `Builds/Windows/SkyHopper.exe` — 폴더째 압축해서 공유 |
+| 웹 빌드 (WebGL) | `Builds/WebGL` — 웹 서버나 itch.io에 업로드 |
+| 웹 빌드 후 브라우저에서 실행 | 빌드 후 내 컴퓨터에서 바로 브라우저로 열어 봄 |
+
 ## 조작
 | 키 | 동작 |
 |---|---|
